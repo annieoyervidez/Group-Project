@@ -1,6 +1,3 @@
-#MAKE SURE EXCEL SPREADSHEET AND JUPYTER FILE ARE IN SAME FOLDER
-#MAKE SURE !pip install openpyxl has been executed before running 
-#MAKE SURE !pip install plyer has been executed before running 
 from datetime import datetime, timedelta
 from openpyxl import Workbook, load_workbook
 from plyer import notification
@@ -63,19 +60,21 @@ def send_desktop_notification(event, description, date):
     )
 
 # --------------------- CHECK REMINDERS ---------------------
-def check_reminders():
+def check_reminders(calendar):
     now = datetime.now()
-    alert_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
+    today_str = now.strftime("%Y-%m-%d")
+    tomorrow_str = (now + timedelta(days=1)).strftime("%Y-%m-%d")
 
     found = False
+
     for item in calendar:
-        if item["date"] == alert_date:
+        if item["date"] in (today_str, tomorrow_str):
             send_desktop_notification(item["event"], item["description"], item["date"])
-            print(f"🔔 Reminder shown for: {item['event']}")
+            print(f"🔔 Reminder shown for: {item['event']} (due {item['date']})")
             found = True
 
     if not found:
-        print("No reminders due in the next 24 hours.")
+        print("No reminders due today or tomorrow.")
 
 # --------------------- MENU ---------------------
 def main():
@@ -91,7 +90,7 @@ def main():
         if choice == "1":
             add_event()
         elif choice == "2":
-            check_reminders()
+            check_reminders(calendar)
         elif choice == "3":
             print("Goodbye!")
             break
