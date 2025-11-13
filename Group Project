@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 from openpyxl import Workbook, load_workbook
 from plyer import notification
+import os 
+import platform
+import subprocess
 
 calendar = []
 
@@ -75,6 +78,22 @@ def check_reminders(calendar):
 
     if not found:
         print("No reminders due today or tomorrow.")
+
+#-------------------------OPEN CALENDAR FILE-----------------------
+def open_calendar_file(filename="calendar.xlsx"):
+    if not os.path.exists(filename):
+        print("⚠️ Calendar file not found. Creating a new one...")
+        save_calendar(filename)
+
+    print(f"📂 Opening {filename}...")
+
+    if platform.system() == "Windows":
+        os.startfile(filename)
+    elif platform.system() == "Darwin":  # macOS
+        subprocess.call(["open", filename])
+    else:  # Linux / others
+        subprocess.call(["xdg-open", filename])
+
 
 # --------------------- MENU ---------------------
 def main():
